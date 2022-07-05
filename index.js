@@ -38,16 +38,19 @@ client.on("message", async (message) => {
 			let info = respon[0];
 			console.log(info);
 			const infoMessage = new MessageEmbed()
-			.setColor('#0099ff')
+			.setColor('#808080')
 			.setTitle('유저 정보')
 			.setURL('http://1.255.200.201/search?value=' + info.name)
 			.setAuthor({ name: '유저 정보', iconURL: 'https://mc-heads.net/avatar/' + info.name, url: 'http://1.255.200.201/search?value=' + info.name })
 			.setThumbnail( 'https://mc-heads.net/avatar/' + info.name )
 			.addFields(
-				{ name: '닉네임', value: info.name + '' },
-				{ name: '\u200B', value: '\u200B' },
-				{ name: '함께한 시간', value: info.playtime + '', inline: true },
-				{ name: '보유 자산', value: info.money  + '', inline: true },
+				{ name: '닉네임', value: info.name + '\n' },
+				{ name: '함께한 시간', value: info.playtime + '\n', inline: true },
+				{ name: '보유 자산', value: info.money  + '\n', inline: true },
+				{ name: '인기도', value: info.pop + '\n', inline: true },
+				{ name: '낚은 물고기', value: info.fish  + '\n', inline: true },
+				{ name: '먹은 케이크', value: info.cake + '\n', inline: true },
+				{ name: '섬 진행도', value: info.step + '레벨 | ' +  info.progress  + '%\n', inline: true },
 			)
 		
 			message.channel.send({ embeds: [infoMessage] });
