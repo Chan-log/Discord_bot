@@ -41,7 +41,7 @@ client.on("message", async (message) => {
 			.setColor('#808080')
 			.setTitle('유저 정보')
 			.setURL('http://1.255.200.201/search?value=' + info.name)
-			.setAuthor({ name: '유저 정보', iconURL: 'https://mc-heads.net/avatar/' + info.name, url: 'http://1.255.200.201/search?value=' + info.name })
+			.setAuthor({ name: '유저 정보', iconURL: message.guild.iconURL(), url: 'http://1.255.200.201/search?value=' + info.name })
 			.setThumbnail( 'https://mc-heads.net/avatar/' + info.name )
 			.addFields(
 				{ name: '닉네임', value: info.name + '\n' },
@@ -60,15 +60,26 @@ client.on("message", async (message) => {
 		let title = args.shift();
 		let content = args.join(" ");
 		if (command === `게시`) {
+			const user = message.member.nickname;
 			if (title == undefined) return;
 			const uploadMessage = new MessageEmbed()
 			.setColor('#0099ff')
 			.setTitle(title + '')
-			.setAuthor({ name: '게시가 완료되었습니다.', iconURL: 'https://i.imgur.com/AfFp7pu.png' })
+			.setAuthor({ name: '게시가 완료되었습니다.', iconURL: message.guild.iconURL()})
 			.setDescription(content + '')
-			.setThumbnail('https://i.imgur.com/AfFp7pu.png')
+			.setThumbnail('https://mc-heads.net/avatar/' + user)
 			message.channel.send({ embeds: [uploadMessage] });
-			db.collection('post').insertOne( {title : title, content : content})
+			let today = new Date();
+			let year = today.getFullYear();
+			let month = today.getMonth()+1;
+			let day = today.getDate();
+			let hour = today.getHours();
+			let minutes = today.getMinutes();
+			let format = year+"/"+(("00"+month.toString()).slice(-2))+"/"+(("00"+day.toString()).slice(-2)) + " " + (("00"+hour.toString()).slice(-2)) + ":" + (("00"+minutes.toString()).slice(-2));
+			db.collection('counter').findOne({name : 'TotalPost'}, function(err, result){	
+				db.collection('post').insertOne( {_id : ++result.totalPost, title : title, content : content, time : format, name : user})
+				db.collection('counter').updateOne({name : 'TotalPost'},{$inc : {totalPost : 1}});
+			});
 		}
 	}
 })
