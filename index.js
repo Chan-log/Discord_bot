@@ -16,12 +16,8 @@ client.once("ready", () => {
 // MongoDB 연결
 
 // 섬원 모집 데이터 베이스
-MongoClient.connect('mongodb+srv://root:go_159159159@cluster0.j1qgc.mongodb.net/Notice?retryWrites=true&w=majority', (er, client) =>{
-	db = client.db('Notice');
-})
-
-// 유저 정보 로드
-MongoClient.connect('mongodb+srv://root:go_159159159@cluster0.j1qgc.mongodb.net/database?retryWrites=true&w=majority', (er, client) =>{
+MongoClient.connect('mongodb://root:mc_159159159@1.255.200.201:27017', (er, client) =>{
+	db = client.db('database');
 	userInfo = client.db('database');
 })
 
@@ -34,8 +30,9 @@ client.on("message", async (message) => {
 	let args = message.content.slice(prefix.length).trim().split(/ +/g);
 	let command = args.shift().toLowerCase();
 	if (command === `정보`){
-		userInfo.collection('collection').find({name: args[0]}).toArray(function(err, respon){
-			let info = respon[0];
+		
+		userInfo.collection('collection').find({$text : { $search: args[0] }}).toArray(function(err, res){
+			let info = res[0];
 			console.log(info);
 			const infoMessage = new MessageEmbed()
 			.setColor('#808080')
@@ -56,9 +53,36 @@ client.on("message", async (message) => {
 			message.channel.send({ embeds: [infoMessage] });
 		})
 	}
+	if (command === `인기도`) {
+		const pop = userInfo.collection('collection').find().sort( { "pop": 1 });
+		console.log(pop);
+		userInfo.collection('collection').find().sort( { "pop": 1 } ,function(err, res){
+			const user = message.member.nickname;
+			console.log(res);
+			const infoMessage = new MessageEmbed()
+			.setColor('#808080')
+			.setTitle('유저 정보')
+			.setURL('http://1.255.200.201/search?value=' + user)
+			.setAuthor({ name: '인기도 순위', iconURL: message.guild.iconURL(), url: 'http://1.255.200.201/search?value=' + info.name })
+			.setThumbnail( 'https://mc-heads.net/avatar/' + res[0].name )
+			.addFields(
+				{ name: '1위 | ' + res[0].name, value: res[0].pop + '\n', inline: false },
+				{ name: '2위 | ' + res[1].name, value: res[1].pop + '\n', inline: false },
+				{ name: '3위 | ' + res[2].name, value: res[2].pop + '\n', inline: false },
+				{ name: '4위 | ' + res[3].name, value: res[3].pop + '\n', inline: false },
+				{ name: '5위 | ' + res[4].name, value: res[4].pop + '\n', inline: false },
+			)
+		
+			message.channel.send({ embeds: [infoMessage] });
+		});
+	};
 	if (message.channel.id === '986564757186293820') {
 		let title = args.shift();
 		let content = args.join(" ");
+		if (command === `!`) {
+			db.collection('quiz').insertOne( {answer : title, question : content})
+			message.reply("답 | " + title + " 질문 | " + content);
+		}
 		if (command === `게시`) {
 			const user = message.member.nickname;
 			if (title == undefined) return;
