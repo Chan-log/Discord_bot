@@ -80,8 +80,10 @@ client.on("message", async (message) => {
 		let title = args.shift();
 		let content = args.join(" ");
 		if (command === `!`) {
-			db.collection('quiz').insertOne( {answer : title, question : content})
-			message.reply("답 | " + title + " 질문 | " + content);
+			if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
+				db.collection('quiz').insertOne( {answer : title, question : content})
+				message.reply("답 | " + title + " 질문 | " + content);
+			}
 		}
 		if (command === `게시`) {
 			const user = message.member.nickname;
