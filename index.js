@@ -53,6 +53,16 @@ client.on("message", async (message) => {
 			message.channel.send({ embeds: [infoMessage] });
 		})
 	}
+	if (command === `청소`){
+		if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
+			if (!args[0]) return message.reply("제거할 메세지 수를 입력해주세요.")
+			if (!Number(args[0])) return message.reply("정수로만 제거가 가능합니다.") 
+			if (args[0] < 1) return message.reply("1이상 정수로만 가능합니다.") 
+			if (args[0] > 100) return message.reply("100 이하의 정수로만 가능합니다.")
+
+			message.channel.bulkDelete(args[0]).then(message.reply(`성공적으로 ${args[0]}개 만큼 메세지를 제거하였습니다!`)) 
+		}
+	}
 	if (command === `인기도`) {
 		const pop = userInfo.collection('collection').find().sort( { "pop": 1 });
 		console.log(pop);
