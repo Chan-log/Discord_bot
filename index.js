@@ -29,7 +29,6 @@ client.on("message", async (message) => {
 	let args = message.content.slice(prefix.length).trim().split(/ +/g);
 	let command = args.shift().toLowerCase();
 	if (command === `정보`){
-		
 		db.collection('collection').find({$text : { $search: args[0] }}).toArray(function(err, res){
 			let info = res[0];
 			console.log(info);
@@ -48,7 +47,6 @@ client.on("message", async (message) => {
 				{ name: '먹은 케이크', value: info.cake + '\n', inline: true },
 				{ name: '섬 진행도', value: info.step + '레벨 | ' +  info.progress  + '%\n', inline: true },
 			)
-		
 			message.channel.send({ embeds: [infoMessage] });
 		})
 	}
