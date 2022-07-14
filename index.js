@@ -18,7 +18,6 @@ client.once("ready", () => {
 // 섬원 모집 데이터 베이스
 MongoClient.connect('mongodb://root:mc_159159159@1.255.200.201:27017', (er, client) =>{
 	db = client.db('database');
-	userInfo = client.db('database');
 })
 
 // 명령어 설정
@@ -31,7 +30,7 @@ client.on("message", async (message) => {
 	let command = args.shift().toLowerCase();
 	if (command === `정보`){
 		
-		userInfo.collection('collection').find({$text : { $search: args[0] }}).toArray(function(err, res){
+		db.collection('collection').find({$text : { $search: args[0] }}).toArray(function(err, res){
 			let info = res[0];
 			console.log(info);
 			const infoMessage = new MessageEmbed()
