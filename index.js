@@ -16,7 +16,7 @@ client.once("ready", () => {
 // MongoDB 연결
 
 // 섬원 모집 데이터 베이스
-MongoClient.connect('mongodb://root:mc_159159159@1.255.200.201:27017', (er, client) =>{
+MongoClient.connect('', (er, client) =>{
 	db = client.db('database');
 })
 
@@ -28,6 +28,7 @@ client.on("message", async (message) => {
 	if (message.content.indexOf(prefix) !== 0) return;
 	let args = message.content.slice(prefix.length).trim().split(/ +/g);
 	let command = args.shift().toLowerCase();
+	// USER INFO 
 	if (command === `정보`){
 		db.collection('collection').find({$text : { $search: args[0] }}).toArray(function(err, res){
 			let info = res[0];
@@ -35,9 +36,9 @@ client.on("message", async (message) => {
 			const infoMessage = new MessageEmbed()
 			.setColor('#808080')
 			.setTitle('유저 정보')
-			.setURL('http://1.255.200.201/search?value=' + info.name)
-			.setAuthor({ name: '유저 정보', iconURL: message.guild.iconURL(), url: 'http://1.255.200.201/search?value=' + info.name })
-			.setThumbnail( 'https://mc-heads.net/avatar/' + info.name )
+			.setURL('http://localhost/search?value=' + info.name)
+			.setAuthor({ name: '유저 정보', iconURL: message.guild.iconURL(), url: 'http://localhost/search?value=' + info.name })
+			.setThumbnail( 'https://mc-heads.net/avatar/' + info.name ) // MINECRAFT HEAD LOAD
 			.addFields(
 				{ name: '닉네임', value: info.name + '\n' },
 				{ name: '함께한 시간', value: info.playtime + '\n', inline: true },
@@ -50,16 +51,7 @@ client.on("message", async (message) => {
 			message.channel.send({ embeds: [infoMessage] });
 		})
 	}
-	if (command === `청소`){
-		if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
-			if (!args[0]) return message.reply("제거할 메세지 수를 입력해주세요.")
-			if (!Number(args[0])) return message.reply("정수로만 제거가 가능합니다.") 
-			if (args[0] < 1) return message.reply("1이상 정수로만 가능합니다.") 
-			if (args[0] > 100) return message.reply("100 이하의 정수로만 가능합니다.")
-
-			message.channel.bulkDelete(args[0]).then(message.reply(`성공적으로 ${args[0]}개 만큼 메세지를 제거하였습니다!`)) 
-		}
-	}
+	// 고쳐야할것
 	if (command === `인기도`) {
 		const pop = userInfo.collection('collection').find().sort( { "pop": 1 });
 		console.log(pop);
@@ -69,8 +61,8 @@ client.on("message", async (message) => {
 			const infoMessage = new MessageEmbed()
 			.setColor('#808080')
 			.setTitle('유저 정보')
-			.setURL('http://1.255.200.201/search?value=' + user)
-			.setAuthor({ name: '인기도 순위', iconURL: message.guild.iconURL(), url: 'http://1.255.200.201/search?value=' + info.name })
+			.setURL('http://localhost/search?value=' + user)
+			.setAuthor({ name: '인기도 순위', iconURL: message.guild.iconURL(), url: 'http://localhost/search?value=' + info.name })
 			.setThumbnail( 'https://mc-heads.net/avatar/' + res[0].name )
 			.addFields(
 				{ name: '1위 | ' + res[0].name, value: res[0].pop + '\n', inline: false },
@@ -86,12 +78,14 @@ client.on("message", async (message) => {
 	if (message.channel.id === '986564757186293820') {
 		let title = args.shift();
 		let content = args.join(" ");
+		// Speed Quiz Upload
 		if (command === `!`) {
 			if (message.member.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
 				db.collection('quiz').insertOne( {answer : title, question : content})
 				message.reply("답 | " + title + " 질문 | " + content);
 			}
 		}
+		// ㅇ
 		if (command === `게시`) {
 			const user = message.member.nickname;
 			if (title == undefined) return;
