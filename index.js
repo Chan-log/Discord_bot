@@ -85,7 +85,7 @@ client.on("message", async (message) => {
 				message.reply("답 | " + title + " 질문 | " + content);
 			}
 		}
-		// ㅇ
+		// 게임 안 섬원 모집 
 		if (command === `게시`) {
 			const user = message.member.nickname;
 			if (title == undefined) return;
